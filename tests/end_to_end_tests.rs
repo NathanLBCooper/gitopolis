@@ -339,6 +339,12 @@ ls: cannot access \'non-existent\': No such file or directory
 Command exited with code exit status: 2
 2 commands exited with non-zero status code
 ";
+	let expected_stderr_windows = "ls: cannot access \'non-existent\': No such file or directory
+Command exited with code exit code: 2
+ls: cannot access \'non-existent\': No such file or directory
+Command exited with code exit code: 2
+2 commands exited with non-zero status code
+";
 
 	gitopolis_executable()
 		.current_dir(&temp)
@@ -346,7 +352,10 @@ Command exited with code exit status: 2
 		.assert()
 		.success()
 		.stdout(expected_stdout)
-		.stderr(expected_stderr);
+		.stderr(match cfg!(windows) {
+			true => expected_stderr_windows,
+			false => expected_stderr,
+		});
 }
 
 #[test]
